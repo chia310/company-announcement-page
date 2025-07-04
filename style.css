@@ -1,0 +1,55 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+input, button {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+/* --- 新增用於美化表單的 CSS --- */
+
+#booking-form .form-group {
+    margin-bottom: 15px; /* 讓每一行之間有點垂直間距 */
+}
+
+#booking-form label {
+    display: inline-block;   /* 讓標籤可以設定寬度 */
+    width: 90px;             /* 設定一個固定的寬度，讓冒號對齊 */
+    vertical-align: middle;  /* 讓標籤和輸入框在垂直方向上置中對齊 */
+}
+
+#booking-form .form-text {
+    color: #555; /* 讓說明文字顏色稍淺，作為區別 */
+}
