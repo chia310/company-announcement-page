@@ -94,66 +94,93 @@ signoutButton.onclick = function handleSignoutClick() {
     }
 }
 
-// 處理表單提交
+// 處理表單提交 (★★★ 全新版本，整合了兩大新功能 ★★★)
 bookingForm.onsubmit = async function(e) {
     e.preventDefault(); // 防止頁面重新整理
 
+    // 1. 取得表單所有資料
     const summary = document.getElementById('summary').value;
     const bookingDate = document.getElementById('booking-date').value;
     const startTime = document.getElementById('start-time').value;
+    const endTime = document.getElementById('end-time').value; // 新增：取得結束時間
 
-    if (!summary || !bookingDate || !startTime) {
+    if (!summary || !bookingDate || !startTime || !endTime) {
         alert("請填寫所有欄位！");
         return;
     }
 
-    // 組合日期和時間字串
+    // 2. 組合日期時間物件並驗證
     const startDateTime = new Date(`${bookingDate}T${startTime}`);
-    // 計算 30 分鐘後的結束時間
-    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+    const endDateTime = new Date(`${bookingDate}T${endTime}`); // 新增：使用選擇的結束時間
 
-    // 建立日曆事件物件
-    const event = {
-    'summary': summary,
-    // 我們暫時將 description 這行移除，讓核心功能恢復正常
-    'start': {
-        'dateTime': startDateTime.toISOString(),
-        'timeZone': 'Asia/Taipei'
-    },
-    'end': {
-        'dateTime': endDateTime.toISOString(),
-        'timeZone': 'Asia/Taipei'
+    // 新增：驗證結束時間是否晚於開始時間
+    if (endDateTime <= startDateTime) {
+        alert('預約失敗！結束時間必須晚於開始時間。');
+        return;
     }
-};
 
     try {
+        // 3. ★★★【新功能】檢查時間衝突 ★★★
+        console.log('正在檢查時間是否已被預約...');
+        const conflictCheckResponse = await gapi.client.calendar.events.list({
+            'calendarId': CALENDAR_ID,
+            'timeMin': startDateTime.toISOString(),
+            'timeMax': endDateTime.toISOString(),
+            'maxResults': 1, // 我們只需要知道有沒有事件，所以查1筆就夠了
+            'singleEvents': true
+        });
+
+        if (conflictCheckResponse.result.items.length > 0) {
+            // 如果 items 陣列長度大於 0，表示該時段內有事件存在
+            alert('預約失敗！該時段已被預約，請選擇其他時間。');
+            console.error('預約衝突', conflictCheckResponse.result.items);
+            return; // 中斷預約
+        }
+
+        // 4. 如果沒有衝突，則建立新活動
+        console.log('時間允許，正在建立新預約...');
+        const event = {
+            'summary': summary,
+            'start': {
+                'dateTime': startDateTime.toISOString(),
+                'timeZone': 'Asia/Taipei'
+            },
+            'end': {
+                'dateTime': endDateTime.toISOString(),
+                'timeZone': 'Asia/Taipei'
+            }
+        };
+
         const request = gapi.client.calendar.events.insert({
             'calendarId': CALENDAR_ID,
             'resource': event
         });
         
         await request.execute(function(event) {
-            alert(`預約成功！\n事由：${event.summary}\n時間：${new Date(event.start.dateTime).toLocaleString()}`);
+            console.log('--- Google API 回傳的成功資料 ---');
+            console.log(event);
+
+            alert(`預約成功！\n事由：${event.summary}\n時間：${new Date(event.start.dateTime).toLocaleString()} - ${new Date(event.end.dateTime).toLocaleTimeString()}`);
             bookingForm.reset();
-            // 您可以在這裡重新整理日曆或事件列表 <--- 這行註解可以留著或刪掉，不影響功能
-    
-            // --- ★ 請在 bookingForm.reset(); 的後面加上這段新程式碼 ★ ---
+            
+            // 自動重整 iframe 
             const calendarIframe = document.querySelector('#calendar-embed iframe');
             if (calendarIframe) {
                 calendarIframe.src = calendarIframe.src; 
-    }
-    // --- ★ 新增結束 ★ ---
-});
+            }
+        });
 
     } catch (error) {
-        console.error('預約失敗:', error);
-        alert('預約失敗，請查看 console 的錯誤訊息。');
+        console.error('預約過程中發生錯誤:', error);
+        alert('預約過程中發生錯誤，請查看主控台 (Console) 的詳細資訊。');
     }
 };
 
 // 動態產生時間選項 (00:00, 00:30, 01:00...)
-function populateTimeSlots() {
-    const timeSelect = document.getElementById('start-time');
+function populateTimeSlots(selectElementId) {
+    const timeSelect = document.getElementById(selectElementId);
+    if (!timeSelect) return; // 如果找不到元素就直接返回
+
     for (let i = 0; i < 24; i++) {
         for (let j = 0; j < 2; j++) {
             const hour = i.toString().padStart(2, '0');
@@ -192,5 +219,6 @@ function displayDutyRoster() {
 // --- 頁面載入後執行的動作 ---
 document.addEventListener('DOMContentLoaded', (event) => {
     displayDutyRoster();
-    populateTimeSlots();
+    populateTimeSlots('start-time'); // 填入開始時間
+    populateTimeSlots('end-time');   // ★ 新增：也填入結束時間
 });

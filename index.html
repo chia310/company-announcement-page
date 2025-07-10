@@ -24,30 +24,29 @@
             </div>
 
             <form id="booking-form" style="display: none;">
-                <h3>新增預約</h3>
+                 <h3>新增預約</h3>
     
-            <div class="form-group">
-               <label for="summary">會議名稱：</label>
-               <input type="text" id="summary" required placeholder="例如：部門週會">
-            </div>
+                 <div class="form-group">
+                    <label for="summary">會議名稱：</label>
+                   <input type="text" id="summary" required placeholder="例如：部門週會">
+                </div>
 
-            <div class="form-group">
-                <label for="booking-date">日期：</label>
-                <input type="date" id="booking-date" required>
-            </div>
+                <div class="form-group">
+                    <label for="booking-date">日期：</label>
+                    <input type="date" id="booking-date" required>
+                </div>
 
-            <div class="form-group">
-                <label for="start-time">開始時間：</label>
-               <select id="start-time" required></select>
-            </div>
+                <div class="form-group">
+                    <label for="start-time">開始時間：</label>
+                    <select id="start-time" required></select>
+                </div>
 
-            <div class="form-group">
-               <label>結束時間：</label>
-                <span class="form-text">會議將自動設定為開始時間的 1 小時後結束。</span>
-            </div>
-
-            <button type="submit">送出預約</button>
-        </form>
+                <div class="form-group">
+                    <label for="end-time">結束時間：</label>
+                    <select id="end-time" required></select>
+                </div>
+                <button type="submit">送出預約</button>
+            </form>
 
             <h3>會議室使用狀況</h3>
             <div id="calendar-embed">
