@@ -203,13 +203,34 @@ const rotationDays = 7;
 const dutyListContainer = document.getElementById('duty-roster-list');
 
 function displayDutyRoster() {
-    dutyListContainer.innerHTML = '';
+    dutyListContainer.innerHTML = ''; // 清空舊內容
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 將時間設為午夜，避免因小時、分鐘影響日期比較
+
+    let periodCounter = 0;
+    let firstDutyDate = new Date(startDate);
+
+    // 迴圈：不斷將起始日期往後推（每次加7天），直到找到第一個「大於或等於今天」的輪值日
+    while (firstDutyDate < today) {
+        periodCounter++;
+        // 重新從 startDate 計算，避免 누적 誤差
+        firstDutyDate = new Date(startDate);
+        firstDutyDate.setDate(startDate.getDate() + periodCounter * rotationDays);
+    }
+
+    // 從找到的第一個輪值日開始，往後顯示 10 筆資料
     for (let i = 0; i < 10; i++) {
+        const currentPeriod = periodCounter + i;
+        
         const dutyDate = new Date(startDate);
-        dutyDate.setDate(startDate.getDate() + (i * rotationDays));
+        dutyDate.setDate(startDate.getDate() + currentPeriod * rotationDays);
+
         const dateString = `${dutyDate.getMonth() + 1}月${dutyDate.getDate()}日`;
-        const personIndex = i % dutyNames.length;
+
+        // 根據總週期數來計算正確的人名索引
+        const personIndex = currentPeriod % dutyNames.length;
         const personName = dutyNames[personIndex];
+
         const dutyEntry = document.createElement('p');
         dutyEntry.textContent = `日期 (${dateString})：${personName}`;
         dutyListContainer.appendChild(dutyEntry);
