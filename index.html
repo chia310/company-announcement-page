@@ -16,47 +16,11 @@
                 </div>
         </section>
 
-        <section id="meeting-room">
-            <h2>會議室預約</h2>
-            <div id="auth-section">
-                <button id="authorize_button" style="display: none;">登入並授權</button>
-                <button id="signout_button" style="display: none;">登出</button>
-            </div>
-
-            <form id="booking-form" style="display: none;">
-                 <h3>新增預約</h3>
-    
-                 <div class="form-group">
-                    <label for="summary">會議名稱：</label>
-                   <input type="text" id="summary" required placeholder="例如：部門週會">
-                </div>
-
-                <div class="form-group">
-                    <label for="booking-date">日期：</label>
-                    <input type="date" id="booking-date" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="start-time">開始時間：</label>
-                    <select id="start-time" required></select>
-                </div>
-
-                <div class="form-group">
-                    <label for="end-time">結束時間：</label>
-                    <select id="end-time" required></select>
-                </div>
-                <button type="submit">送出預約</button>
-            </form>
-
-            <h3>會議室使用狀況</h3>
-            <div id="calendar-embed">
-                </div>
-        </section>
+        
     </main>
 
 <script src="script.js"></script>
 
-    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+ 
 </body>
 </html>
